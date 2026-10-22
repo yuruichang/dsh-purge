@@ -114,14 +114,36 @@ if (LEGACY[op]) {
     } else {
       throw Error("用法：purge-community reanchor list | show <id> | apply <id> [--index n] [--lines a-b] [--yes] | clear <id>");
     }
+  } else if (op === "retry") {
+    const sub = (argument || "status").toLowerCase();
+    if (sub === "on" || sub === "off") {
+      const next = writeTuning({ refusalRetry: sub === "on" });
+      result = { ok: true, refusalRetry: next.refusalRetry, restart_required: false, effective: "next-turn" };
+    } else {
+      result = { ok: true, refusalRetry: readTuning(home).refusalRetry === true, hint: "purge-community retry on|off" };
+    }
   } else if (op === "rewind") {
     const sub = (argument || "status").toLowerCase();
     if (sub === "on" || sub === "off") {
       const next = writeTuning({ rewind: sub === "on" });
-      logAudit("rewind", { enabled: next.rewind }, home);
       result = { ok: true, rewind: next.rewind, restart_required: true };
     } else {
       result = { ok: true, rewind: readTuning(home).rewind !== false, hint: "purge-community rewind on|off" };
+    }
+  } else if (op === "inject") {
+    // 注入位置：head / tail / both。改完下一轮对话即生效（section 每轮回读 tuning），
+    // 不需要重启；面板显示的段位会在下一次读取时刷新。
+    const sub = (argument || "status").toLowerCase();
+    const allowed = ["head", "tail", "both"];
+    if (allowed.includes(sub)) {
+      const next = writeTuning({ injectPosition: sub });
+      logAudit("tuning_setting", { setting: "injectPosition", value: next.injectPosition }, home);
+      result = { ok: true, injectPosition: next.injectPosition, restart_required: false };
+    } else if (sub === "status" || !argument) {
+      result = { ok: true, injectPosition: readTuning(home).injectPosition || "head", hint: "purge-community inject head|tail|both" };
+    } else {
+      result = { ok: false, error: "injectPosition 只接受 head / tail / both", value: sub };
+      process.exitCode = 2;
     }
   } else if (op === "probe") {
     if (argument === "new" || argument === "create") {
