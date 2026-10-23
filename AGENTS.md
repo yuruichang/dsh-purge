@@ -1,7 +1,7 @@
 # AGENTS.md — 给 AI agent 的 Purge 使用说明书
 
 > 这份文件是写给**在 DSH 里干活的 agent** 的，不是营销文档。
-> 当前版本：**1.6.43** · 适配 DSH Desktop **0.2.1-rc.2**（rc.1 同样通过）
+> 当前版本：**1.6.47** · 适配 DSH Desktop **0.2.1-rc.2**（rc.1 同样通过）
 > 版本号由 `npm run check:docs` 与 `package.json` 校验，发版必须同步。
 
 ---
@@ -131,7 +131,7 @@ purge-community probe new
 
 | 组件 | 值 |
 | --- | --- |
-| 插件 | `dsh-purge-community` 1.6.43 |
+| 插件 | `dsh-purge-community` 1.6.47 |
 | 已验证宿主 | DSH Desktop 0.2.1-rc.1 / 0.2.1-rc.2 |
 | 其它宿主 | 允许应用，但 `selfcheck` 会标"未验证"；先看 `diagnose` |
 | Node | ≥18（桌面版自带运行时即可） |
@@ -326,3 +326,19 @@ status/selfcheck/diagnose 使用 `diagnosticHost` 统一检查当前安装的物
 - A/B：启动 DSH 前设 `PURGE_BOOST_ORDER=-50000` 可回到旧位置；不设则用 9500。
 - 切换段位：`purge-community inject head|tail|both`（写 tuning + 记 `tuning_setting`，下一轮生效，不需要重启）。
 - 改排序属于"行为变更"：发布前应做真机 A/B（同一组易拒请求，比较 `refusal_retry` 次数与回答形态），不能只靠单测的 order 数字。
+
+## 1.6.44：市场安装与旧包迁移
+
+市场重复安装拦截发生在插件加载前，不能靠修改插件运行时代码解决。旧版用户使用本仓库独立安装器迁移，不先卸载；保留数据目录、权限、更新偏好及提示词。安装后检查实际包入口、启用 bundle 和配置合成；失败恢复依赖树、清单与锁文件，不能把 CLI 退出 0 当作全部成功。已知旧包 `name` 引用精确迁移；未知 ID、手动 insert 或动态入口停止并报告，不删参数。回滚反向迁移已记录的包引用，保留后续配置值。说明和实际验收命令见 [市场迁移指南](docs/MARKET-MIGRATION.md)。第三方索引/市场 PR 待其发布，不自动重启。
+
+## 1.6.45：应用失败诊断（#64）
+
+不要把所有 `complete: false` 都归为 CMD 故障。按 `failed`、`host_written`、`hook_restore_failed`、`cli_repair` 与 `cmd_flash` 的明确结果逐项诊断；旧后端缺少字段时保留未知错误，不假定成功或提示词已写入。收集客户端发行名称、客户端和底层 DSH 版本、操作系统及脱敏错误，不索取完整配置或提示词。#63 的第三方宿主兼容性尚未确认，不能套用官方宿主结论。见 [维护说明](docs/maintenance-issues-63-64.md)。
+
+## 1.6.46：链接目标保护（#67）
+
+Windows Electron 的递归删除可能进入 Junction。清理使用 `removeTreeNoFollowSync` / `removeTreeNoFollow`，不要回退到原生 recursive rm。旧运行进程仍会执行旧清理代码，因此受影响 Windows 版本应通过新版独立安装器升级；不要先触发旧面板更新或回滚。保留当前设置、外部依赖与可用备份；清理警告不代表安装验证失败，不能用部分删除的 checkpoint 回滚。已丢文件单独从可信来源或适当备份恢复，不假设 Purge 备份覆盖所有第三方数据。详情见 [#67 维护说明](docs/maintenance-issue-67.md)。
+
+## 桌面壳入口诊断（1.6.47，#68）
+
+`diagnose` 的 `desktop_entry` 与自检、应用使用相同解析器。优先所选物理 app 目录的 package.json/main；仅在无声明时使用唯一已知布局。`missing_entry`、`invalid_manifest`、`invalid_main`、`outside_app`、`not_file`、`unreadable_entry`、`ambiguous_entry` 都不能当作补丁已生效。不要删 main 字段、伪造 marker 或复制旧入口消除红点；核对安装文件与宿主版本，保留配置和原文件。已定位但锚点不匹配仍按原有漂移诊断处理。磁盘状态不证明当前进程已加载，不能自行重启用户 DSH。
