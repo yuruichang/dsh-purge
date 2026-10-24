@@ -1,7 +1,7 @@
 # AGENTS.md — 给 AI agent 的 Purge 使用说明书
 
 > 这份文件是写给**在 DSH 里干活的 agent** 的，不是营销文档。
-> 当前版本：**1.6.47** · 适配 DSH Desktop **0.2.1-rc.2**（rc.1 同样通过）
+> 当前版本：**1.6.54** · 适配 DSH Desktop **0.2.1-rc.3**（rc.1 / rc.2 同样通过）
 > 版本号由 `npm run check:docs` 与 `package.json` 校验，发版必须同步。
 
 ---
@@ -27,7 +27,7 @@
 ## 2. 生命周期：装 → 应用 → 重开
 
 ```
-安装插件（curl 一行）
+通过官方界面/CLI 首次安装，或社区安装器备份迁移
    ↓
 点「应用」→ 解包 host / 写 80 条补丁 / 建快照
    ↓
@@ -46,6 +46,8 @@ selfcheck 全绿 = 可以开工
 一句话：**「应用」是幂等的**，不确定就点它，然后退出重开。
 
 ## 3. CLI 参考（全部命令 + 退出码）
+
+下表的 `purge-community` 是命令简称，不保证安装进 profile 后已在系统 PATH。先按[CLI 回滚与定位说明](docs/INSTALLATION.md#cli-rollback)使用当前 profile 的 `bin/community.js` 与正确运行时；不要为了找命令再安装另一份 npm 包。安装验证看版本、bundle 和配置合成；不能把模型是否拒绝当作安装成功判据。
 
 | 命令 | 作用 | 退出码 |
 | --- | --- | --- |
@@ -89,7 +91,7 @@ purge-community probe new
 | 模型开始推脱/要求确认 | `probe new` | 回显否 | 回显：调人设/强化段；不回显：检查注入层 |
 | 工具被拒绝执行 | `selfcheck` | 沙箱/审批层是否绿 | 绿 → 属工具自身限制；红 → 点应用 |
 | DSH 刚更新过 | `status` | `asar_still_sealed` | 点应用 → 重开 → `selfcheck` |
-| 面板显示版本不一致 | 面板顶部黄条 | 界面与后端不同版本 | 重装同一版本（README 一行命令） |
+| 面板显示版本不一致 | 面板顶部黄条 | 界面与后端不同版本 | 先核对磁盘与运行版本；按 README 选择正确安装/迁移入口 |
 | 想撤销一切 | — | — | `revert`（只撤补丁）/ `rollback <id>`（回滚插件） |
 
 ## 6. 状态与文件（你可以安全读，不要乱写）
@@ -131,8 +133,8 @@ purge-community probe new
 
 | 组件 | 值 |
 | --- | --- |
-| 插件 | `dsh-purge-community` 1.6.47 |
-| 已验证宿主 | DSH Desktop 0.2.1-rc.1 / 0.2.1-rc.2 |
+| 插件 | `dsh-purge-community` 1.6.54 |
+| 已验证宿主 | DSH Desktop 0.2.1-rc.1 / 0.2.1-rc.2 / 0.2.1-rc.3 |
 | 其它宿主 | 允许应用，但 `selfcheck` 会标"未验证"；先看 `diagnose` |
 | Node | ≥18（桌面版自带运行时即可） |
 
@@ -150,23 +152,28 @@ purge-community probe new
 
 Electron 的 app.asar 本体必须用 `diskFs()` 读取；不要把普通 Node 自检通过当作 Electron 运行时通过。`npm run test:electron` 在临时目录内运行真实 Electron 测试，不改动安装或用户设置。
 
-## 12. 安装 / 更新失败：Agent 必读（1.6.13）
+<a id="installation"></a>
+## 12. 安装 / 更新失败：Agent 必读（1.6.47）
 
-1. 读取 DSH 版本、实际 Desktop 可执行文件、`DSH_HOME`、目标 profile。不要猜测另一台设备的路径。首次安装要求 profile 已初始化；Windows 用 `scripts/install.ps1`，macOS 用 `scripts/install.sh`，细节见 [安装指南](docs/INSTALLATION.md)。Web/Headless 继续使用当前实例的 CLI 与发行包迁移，不能套 Desktop 自动发现。
-2. 默认先 `--dry-run`（PowerShell `-DryRun`）确认来源与 SHA256，再按用户授权安装。更新/迁移前安装器自动快照；不要为了安装去改提示词、权限、更新偏好或其他插件。安装、宿主补丁应用与手动重启是三个独立动作。不要安装后自动 apply/restart。
+1. **先选入口，不把社区脚本称为官方方法**。首次安装：DSH 官方插件界面/市场确认框，或该实例的 `dsh plugin --profile <实际名称> add <固定版本TGZ URL>`。官方管理器维护 `dsh.bundle`；我们的索引、TGZ 和 `scripts/install.sh` / `scripts/install.ps1` 是社区内容。本项目没有供此流程使用的裸 npm 包名，不运行 `add dsh-purge`、`add dsh-purge-community` 或全局 npm 安装。已有 `dsh-purge`/独立面板时选社区安装器迁移，不能先卸载旧包。完整可复制命令见 [README](README.md#安装) 与 [安装指南](docs/INSTALLATION.md)。
+2. 读取目标 DSH 版本、可执行文件、`DSH_HOME`、profile，先确认已经初始化。Desktop 默认 `desktop`，CLI/Web 示例为 `web`，不能混用；不要下载另一套 npx 宿主来安装到当前桌面实例。先下载脚本到独立临时路径，审阅后 dry-run，再按已有授权执行。dry-run 只验证前置条件、下载与 SHA256，不安装依赖、不验证完整启动。正式安装会备份、调用官方 CLI、迁移旧包引用并验证磁盘版本；它可能修复解包桌面的 `app/runtime` 链接，Linux 可能准备用户宿主副本，并非完全不写宿主目录。脚本与 bootstrap 来自 master，SHA256 校验的对象是发行 TGZ，不能声称脚本也经过独立签名校验。不改提示词、权限、代理、更新偏好或其他插件；不要安装后自动 apply/restart。
 3. `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` 不是一律“发布太新”。若同时明确报 `@dsh-ops/bash-win32-x64@<版本> ... version not present in registry manifest`，先比较当前公开镜像与 npm 官方元数据。本版安装器仅对这一公开包、明确的公开镜像执行一次 scoped registry 重试；官方 name/version/time/integrity/tarball 不完整则停止。其余依赖保持原源，不改变全局设置。
 4. 市场 JSON 首次安装失败时插件尚未加载，插件运行时无法修复宿主安装器。先让用户选择 npm 官方源，或用独立安装入口。不要承诺“升级插件就能让旧宿主市场自动重试”；换 tgz 仍会触发宿主锁文件校验。
 5. 真实的发布时间不足、integrity/trust 错误、私有源、未知错误：保持失败，保留日志与快照；不要设 minimumReleaseAge=0、trustLockfile，也不要删锁文件、全局清缓存、修改全局 npm 源或把所有错误都归为镜像问题。GitHub `UND_ERR_DESTROYED` 是独立的网络线索，不能承诺换 npm 源会解决。
 6. 失败时查看返回的 backup_id，确认 package.json/锁文件/安装状态。需要恢复时走 `rollback <id>`，保留当前用户内容。不能把失败说成安装成功；不能自动重启。公开 issue 只附脱敏错误，不上传配置、凭证、提示词或完整备份。
 7. 版本核对以 package.json / release-notes 为准。README.md 与 README.zh-CN.md 必须一致，维护文档不能再停在 1.2.0/1.3.0。安装器测试与完整 Windows DSH 界面/宿主补丁验收分开记录，不混为“全部 Windows 功能已验证”。
 
-Linux CLI/Web 可用 `sh scripts/install.sh`，默认选择当前 PATH 的 `node` / `dsh` 与 `web` profile，显式指定实例可用 `DSH_NODE` / `PURGE_DSH_CLI` / `DSH_HOME` / `--profile=名称`。系统 npm 宿主只读时准备用户副本，插件迁移成功后才激活 `~/.local/bin/dsh`；失败保留原入口，完整但未激活的副本供重试复用。入口被用户并发修改时停止，不覆盖。不要自行重启、修改系统目录权限或代理。卸载仅清理本 home 内插件目录及链接本身，外部源码/共享包保留。验收边界见 [PR #42 维护说明](docs/maintenance-pr-42.md)。
+Linux CLI/Web 先按 README 下载脚本再运行；只有已进入仓库根目录时才可用 `sh scripts/install.sh`，默认选择当前 PATH 的 `node` / `dsh` 与 `web` profile，显式指定实例可用 `DSH_NODE` / `PURGE_DSH_CLI` / `DSH_HOME` / `--profile=名称`。系统 npm 宿主只读时准备用户副本，插件迁移成功后才激活 `~/.local/bin/dsh`；失败保留原入口，完整但未激活的副本供重试复用。入口被用户并发修改时停止，不覆盖。不要自行重启、修改系统目录权限或代理。卸载仅清理本 home 内插件目录及链接本身，外部源码/共享包保留。验收边界见 [PR #42 维护说明](docs/maintenance-pr-42.md)。
 
 ## 13. Windows Electron 安装验收（1.6.13）
 
 Windows Desktop 的 exe 是 GUI 子系统。PowerShell 的 `& exe ...` 可能在子进程结束前返回，不能用它后面的 `$LASTEXITCODE` 推断已完成。安装器必须等待明确的进程对象、检查其真实 ExitCode、收集 UTF-8 输出后再清理 bootstrap。回归必须同时覆盖普通 Node 控制台进程与真正 GUI 子系统进程；只用 node.exe 模拟 Desktop 不够。
 
 `desktop` profile 由 Electron 应用初始化；普通 `--profile desktop --dump-config` 会报 managed exclusively，不能因此判断程序坏了，也不能手造“已接受协议/已登录”的记录。隔离实测明确设置 DSH_HOME 与独立 user-data-dir，不碰默认用户目录，不自动应用宿主补丁。界面/登录/完整补丁能力与安装、备份、回滚分别记录；遇到协议或登录确认交给用户决定。
+
+macOS 开发验收不能再复制同名 `.app` 后直接运行，也不能回退使用正式 DSH 可执行文件。使用命令行专用副本、独立测试标识和操作系统写入限制；完整安装/迁移/回滚方法与测试边界见 [隔离验收](docs/INSTALLATION.md#isolated-acceptance)。这条是维护者测试规则，不改变用户正常安装入口。
+
+通用安装验收使用实际 CLI/pnpm 执行首次安装、旧包/旧别名迁移、升级、回滚及失败恢复，校验备份后追加的用户内容。`scripts/check-install-lifecycle-runtime.mjs` 必须由隔离 Electron 的 Node 模式执行，不能拿正式 DSH 或手写 profile 冒充；说明见 [PR #78 验收记录](docs/pr78-runtime-integrity.md)。报告需区分组件模拟、实际 CLI 事务、缓存复用和未测的 UI/宿主功能，不能以一种通过代替另一种。
 
 PowerShell 5.1 读取 UTF-8 JSON/文档应使用 `Get-Content -Raw -Encoding UTF8`，不要把默认 ANSI 解码造成的中文乱码误判为安装包损坏。
 
@@ -322,8 +329,8 @@ status/selfcheck/diagnose 使用 `diagnosticHost` 统一检查当前安装的物
 ## 27. 注入位置与强化段排序（1.6.43）
 
 - 宿主 section 的 order 区间是 `-1000…10200`（persona-prefix 0、工具 1000–3100、DELIVERABLE 9000、STRUCTURED_OUTPUT 9900、WEB_SURFACE 10100、persona-suffix 10200）。低于 0 的 order 排在 persona 之前，**不能用 `GLOBAL_PROMPT_ORDER + n` 表示"尾部"**。
-- 本版：boost `9500`，tail 注入 `10150`。`inject tail|both` 才有意义；`head` 仍是 `GLOBAL_PROMPT_ORDER`。
-- A/B：启动 DSH 前设 `PURGE_BOOST_ORDER=-50000` 可回到旧位置；不设则用 9500。
+- 本版：**boost 默认 `-50000`（最前）**，tail 注入 `10150`。实测同一组 6 条易拒请求：boost 在最前 0/6 首拒，放 9500 时 2/6 首拒（issue #76）。`inject tail|both` 只影响注入正文，不移动强化段。
+- A/B：写 `$DSH_HOME/dsh-purge/boost-order.json`（`{"order": 9500}`）或设 `PURGE_BOOST_ORDER`，改文件后开新会话即生效。优先级：环境变量 > 文件 > 默认。
 - 切换段位：`purge-community inject head|tail|both`（写 tuning + 记 `tuning_setting`，下一轮生效，不需要重启）。
 - 改排序属于"行为变更"：发布前应做真机 A/B（同一组易拒请求，比较 `refusal_retry` 次数与回答形态），不能只靠单测的 order 数字。
 
@@ -342,3 +349,28 @@ Windows Electron 的递归删除可能进入 Junction。清理使用 `removeTree
 ## 桌面壳入口诊断（1.6.47，#68）
 
 `diagnose` 的 `desktop_entry` 与自检、应用使用相同解析器。优先所选物理 app 目录的 package.json/main；仅在无声明时使用唯一已知布局。`missing_entry`、`invalid_manifest`、`invalid_main`、`outside_app`、`not_file`、`unreadable_entry`、`ambiguous_entry` 都不能当作补丁已生效。不要删 main 字段、伪造 marker 或复制旧入口消除红点；核对安装文件与宿主版本，保留配置和原文件。已定位但锚点不匹配仍按原有漂移诊断处理。磁盘状态不证明当前进程已加载，不能自行重启用户 DSH。
+
+## 1.6.48：正文保护与安装别名（#72 / #74）
+
+不要把用户正文包含模板标记当成默认值。自定义、手改、记录缺失或损坏的非空正文保留；仅精确匹配可证明来源的默认内容允许自动刷新。读取失败保留错误，不把失败当空文件。已丢内容只能从用户确认的稿件或备份恢复，不自动回滚整份配置。
+
+版本对账只读当前 profile 的启用入口及真实包身份，支持 `dsh-purge-community` 与 `dsh-purge` 别名；pnpm 的 YAML 从物理包目录解析。缺包、错误身份、多个不同副本继续报错；不要改名目录、删锁文件或清空 update-status.json 来消除告警。旧版对账失败会阻止自动安装，使用新版独立安装器原地升级，之后由用户手动重启。别名回滚保留原依赖名与用户后续编辑；回滚旧版会带回其旧缺陷。详见 [维护说明](docs/maintenance-issues-72-74.md)。
+
+## PR #78：安装目标与架构运行时
+
+目标应用使用显式路径和包结构校验；不要仅凭 `app.asar` 存在或名称含 DSH 判定为宿主。自定义位置先设置 `DSH_APP` / `DSH_EXE`，多个有效目标请让用户明确选择。不要遍历挂载卷或任意父目录，不要在目标校验失败后改用另一份应用。macOS 的 XML/二进制 plist 均经系统解析；无效字段、越界路径和符号链接保持报错，不用猜测的可执行文件消除错误。
+
+按实际运行进程的架构定位运行时。架构目录存在不等于 CLI 可以加载；需要实际执行 pnpm 和安装事务。已有有效链接或真实目录不能为迁就新布局被直接覆盖。测试必须使用带标记的新隔离副本；`scripts/check-architecture-runtime.mjs` 会调整测试副本的布局，只能用于一次性验收环境，不能对正式应用运行。具体证据和边界见 [PR #78 验收记录](docs/pr78-runtime-integrity.md)。
+
+## 28. 不做公网门禁（1.6.52）
+
+- 本 fork **没有**「目标解析到公网就拒绝」的门禁。上游 1.1.74–1.1.77 曾在 `agent/pre-step` 里塞「不行，这是严令禁止的」并清空本轮消息，本版已连判定逻辑一起删除。
+- 不要以「靶场限制」「公网门禁」为由恢复这段代码；需要限制范围由操作者自己声明，插件不替用户判断目标归属。
+- `lib/net-scope.js` 只剩白名单文件 API（`readAllowText` / `writeAllowText` / `normalizeAllowText`）与 `ownServerNote()`（空实现）；`test/no-region-gate.test.mjs` 会在有人重新引入安装器或 `严令禁止` 时直接失败。
+- 上游的 ReDoS 窗口扫描只为那个门禁服务，未采纳；`already queued` 的补丁改写与 pnpm postinstall 也未采纳，原因见 1.6.52 发行说明。
+
+## 1.6.54：旧运行时链接与应用失败诊断（#79 / #77）
+
+升级遇到 `Desktop CLI runtime repair failed` 时，查看同一次响应的 `cli_repair`，不要断言用户没点应用。只有同一安装的 `app/runtime` 链接指向外层 `runtime`，且当前架构目录及 pnpm 加载器均解析在该运行时内，才备份链接并迁移。真实目录、其他活链接、越界与权限错误仍停止；不删除目标目录。创建/校验失败恢复原链接；恢复失败保留备份并显式报错。
+
+界面显示具体 reason、错误码、启动器错误与恢复结果，不上传整份响应、提示词或配置。用户仍报错时收集操作系统/架构、客户端发行名称/版本、插件实际运行版本、详细错误；预设消失需单独确认，不能仅凭总报错认定同源。不自动 apply 或重启。实际验证范围见 [#79 维护记录](docs/maintenance-issue-79.md)。

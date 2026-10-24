@@ -1,6 +1,6 @@
 <div align="center">
 
-# Purge Community
+# dsh-purge Community
 
 **Helping your AI assistant stay focused on your learning and hands-on work.**
 
@@ -8,7 +8,9 @@ A self-hosted add-on for DeepSeek Harness (known in the community as a 破甲 / 
 
 [![Release](https://img.shields.io/github/v/release/kingcharleslzy-ai/dsh-purge?label=release)](https://github.com/kingcharleslzy-ai/dsh-purge/releases)
 
-Current version 1.6.47 · targets **DSH Desktop 0.2.1-rc.2** (rc.1 also passes)
+Current version 1.6.54 · targets **DSH Desktop 0.2.1-rc.2** (rc.1 also passes)
+
+**Original project and author:** independently maintained from [dsh-purge by 小杨 / YuJunZhiXue](https://github.com/YuJunZhiXue/dsh-purge). The original repository is available again. Original attribution, copyright and the MIT license are retained; this community distribution is not an official upstream release.
 
 </div>
 
@@ -16,7 +18,7 @@ Current version 1.6.47 · targets **DSH Desktop 0.2.1-rc.2** (rc.1 also passes)
 
 ## What it is
 
-Purge Community runs entirely on your own machine and gathers the parts of daily use that cost the most attention:
+dsh-purge Community runs entirely on your own machine and gathers the parts of daily use that cost the most attention:
 
 - **See the state** — whether the install, patches and prompt injection are actually ready;
 - **Fewer round trips** — repeated confirmations and interruptions collapse into one setting;
@@ -42,19 +44,23 @@ Local learning, personal projects, automation experiments and maintenance work. 
 
 ## Install
 
-The installer snapshots first and **never** applies patches or restarts the app. Install, apply and restart are three separate steps.
+**DSH provides the official plugin UI and `dsh plugin` CLI. Our `install.sh` / `install.ps1` are community-maintained wrappers, not DeepSeek scripts.**
 
-- macOS: `scripts/install.sh` (`--dry-run` first)
-- Linux CLI/Web: `scripts/install.sh`, with `DSH_NODE`, `PURGE_DSH_CLI`, `DSH_HOME`, `--profile=`
-- Windows 11: `scripts/install.ps1` (`-DryRun` first)
+- First installation: use DSH's Plugins install dialog. Following the current official guide, open Plugins → More beside Experimental plugins → Custom plugin market, then Discover → Add index source. Our community index: `https://kingcharleslzy-ai.github.io/dsh-purge/index.json`. Check the owner `kingcharleslzy-ai/dsh-purge` and package `dsh-purge-community` before confirming.
+- Existing `dsh-purge` or separate panel installation: use the community installer to back up and migrate in place. Do not uninstall first or activate both packages.
+- CLI/Web users who already have `dsh` on PATH and use the `web` profile can use the official command below. Desktop users should not download another npx host to install into their existing desktop profile.
 
-### Install boundaries
+```sh
+dsh plugin --profile web add "https://github.com/kingcharleslzy-ai/dsh-purge/releases/download/v1.6.54/dsh-purge-community-1.6.54.tgz"
+```
 
-- Before the plugin loads, the installer leaves DSH itself untouched; a failed step keeps the original entry point, the logs and the snapshot.
-- It does not change your global npm registry, does not clear caches, and does not touch your other plugins or prompts.
-- If a marketplace JSON install fails (issue #7), the plugin is not loaded yet: pick a dependency source or use the standalone installer instead of retrying the update repeatedly.
+Use the actual instance's profile and `DSH_HOME`. This project distributes via GitHub; do not substitute bare npm package names. The official command does not run our extra Release SHA256 check, migration snapshot or rollback wrapper.
 
-See [installation guide](INSTALLATION.md) for details and failure handling.
+[Copyable macOS, Windows and Linux installer commands](../README.md#安装) start with downloading the script; no source checkout is assumed. macOS defaults to `/Applications/DeepSeek Harness.app`; Windows requires a uniquely identified exe (otherwise pass `-DshExe`). Open DSH once first to initialize its profile. Paths, custom home/profile and recovery commands are explained in the [installation guide](INSTALLATION.md).
+
+Dry-run verifies prerequisites, download and SHA256, **not** dependency installation or application startup. Scripts/bootstrap come from this repository's master branch; the archive checksum is not an independent signature for those scripts. A real installation snapshots and invokes the selected official CLI. For unpacked desktops it may repair `app/runtime`; on read-only Linux hosts it may prepare a user-owned host copy and switch a user launcher after success. It never applies host patches or restarts DSH automatically, and does not change the proxy or global npm registry.
+
+Record the exit code, installed version and backup ID. The running app can keep the old version until the user manually reopens it. `purge-community` is a profile-local command, not necessarily on global PATH; see [CLI recovery](INSTALLATION.md#cli-rollback). Official references: [bundle installation](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/develop/basic/publish.md) and [plugin markets](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/guide/plugin-market.md).
 
 ## Panel
 
@@ -70,7 +76,7 @@ Two separate preferences (check / install), default check-only every six hours. 
 
 ## Compatibility
 
-Plugin `dsh-purge-community` 1.6.47 · verified on DSH Desktop 0.2.1-rc.1 / rc.2 · Node ≥ 18.
+Plugin `dsh-purge-community` 1.6.54 · verified on DSH Desktop 0.2.1-rc.1 / rc.2 · Node ≥ 18.
 
 ## Troubleshooting
 
