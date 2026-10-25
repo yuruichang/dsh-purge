@@ -85,7 +85,9 @@ var __dshPurgeDrill = (() => {
 .rt-btn{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);color:inherit;
   border-radius:6px;padding:3px 9px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap}
 .rt-btn:hover{border-color:var(--dsw-alias-border-l2)}
-.rt-btn-primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:#fff}
+/* brand-primary \u5728\u6DF1\u8272\u4E3B\u9898\u4E0B\u662F\u8FD1\u767D\u8272\uFF08#f9fafb\uFF09\uFF0C\u5F53\u5E95\u8272\u914D #fff \u4F1A\u767D\u5E95\u767D\u5B57\u3002
+   \u6539\u7528\u6807\u7B7E\u8272/\u5E95\u8272\u8FD9\u5BF9\u53CD\u8F6C token\uFF0C\u4E24\u5957\u4E3B\u9898\u90FD\u4FDD\u6301\u9AD8\u5BF9\u6BD4\u3002 */
+.rt-btn-primary{background:var(--dsw-alias-label-primary,#111);border-color:var(--dsw-alias-label-primary,#111);color:var(--dsw-alias-bg-base,#fff)}
 .rt-btn-primary:hover{opacity:.9}
 .rt-btn:disabled{opacity:.5;cursor:default}
 .rt-tabs{display:flex;flex-wrap:wrap;gap:2px;padding:6px 12px 0;border-bottom:1px solid var(--dsw-alias-border-l1)}
@@ -436,7 +438,7 @@ var __dshPurgeDrill = (() => {
 .rt-rep-trace-how{font-size:12px;color:var(--dsw-alias-label-secondary);margin-bottom:6px}
 .rt-rep-step{border-left:2px solid var(--dsw-alias-border-l1);padding:2px 0 6px 9px;margin-bottom:6px}
 .rt-rep-step-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.rt-rep-step-no{width:17px;height:17px;border-radius:50%;background:var(--dsw-alias-brand-primary);color:#fff;
+.rt-rep-step-no{width:17px;height:17px;border-radius:50%;background:var(--dsw-alias-label-primary,#111);color:var(--dsw-alias-bg-base,#fff);
   font-size:10.5px;display:flex;align-items:center;justify-content:center;flex:none}
 .rt-rep-step-title{font-weight:600;font-size:12.5px}
 .rt-rep-step-detail{font-size:12px;color:var(--dsw-alias-label-secondary);margin-top:2px}
@@ -8974,6 +8976,7 @@ var zh = {
   "metric.purged.skip": "\u5DF2\u5199\u5165\u3002\u8DF3\u8FC7 {n} \u9879\uFF0C\u672C\u673A\u6CA1\u6709\u8FD9\u4E9B\u6587\u4EF6",
   "metric.pendingShort": "\u5F85\u5904\u7406 {n}",
   "metric.unmatchedShort": "\u6CA1\u5BF9\u4E0A {n}",
+  "metric.partialShort": "\u90E8\u5206\u547D\u4E2D {n}",
   "metric.skipShort": "\u8DF3\u8FC7 {n}",
   "metric.unlocated.count": "\u2014",
   "metric.shim": "shim",
@@ -8987,6 +8990,8 @@ var zh = {
   "status.off": "\u5DF2\u5173\u95ED",
   "status.pending": "\u5F85\u5E94\u7528",
   "status.unmatched": "\u6CA1\u5BF9\u4E0A",
+  "status.partial": "\u90E8\u5206\u547D\u4E2D",
+  "status.partialDetail": "\uFF08{done}/{total} \u76EE\u6807\uFF09",
   "status.skipped": "\u8DF3\u8FC7",
   "apply.hint": "\u70B9\u5E94\u7528\u4F1A\u6253\u8865\u4E01\u5E76\u628A\u5F53\u524D\u9ED8\u8BA4\u63D0\u793A\u8BCD\u6302\u4E0A\uFF0C\u6846\u91CC\u4ECD\u662F\u63D2\u4EF6\u65E7\u9ED8\u8BA4\u65F6\u81EA\u52A8\u5237\u5230\u52A0\u5BC6\u69FD\uFF0C\u4E0D\u5FC5\u518D\u70B9\u4FDD\u5B58\u3002\u53EA\u6709\u4F60\u53E6\u5199\u7684\u7A3F\u624D\u4F1A\u6309\u6846\u843D\u76D8\u3002\u5F85\u5E94\u7528=\u539F\u6587\u8FD8\u5728\u3002\u8DF3\u8FC7=\u5F53\u524D\u7248\u672C\u4E0D\u9700\u8981\u6216\u7EC4\u4EF6\u672A\u5B89\u88C5\u3002",
   "warn.noRoot": "\u672A\u5B9A\u4F4D\u5230\u5F53\u524D\u5BBF\u4E3B\u7684 @deepseek-ai\uFF0C\u6E05\u6D17\u4E0D\u4F1A\u751F\u6548\u3002\u8BF7\u5B8C\u5168\u9000\u51FA\u540E\u518D\u6253\u5F00\u672C\u5BBF\u4E3B\uFF0C\u5728\u672C\u9875\u70B9\u300C\u5E94\u7528\u300D\u3002\u684C\u9762\u7AEF\u5B89\u88C5\u76EE\u5F55\u53EF\u4EE5\u662F\u4EFB\u610F\u76D8\u7B26\uFF1B\u76EE\u5F55\u540D\u5E26 DeepseekHarness / DeepSeek Harness \u5747\u53EF\u3002",
@@ -9325,6 +9330,7 @@ var en = {
   "metric.purged.skip": "Written. Skipped {n}; those files are not on this install",
   "metric.pendingShort": "Pending {n}",
   "metric.unmatchedShort": "No match {n}",
+  "metric.partialShort": "Partial {n}",
   "metric.skipShort": "Skipped {n}",
   "metric.unlocated.count": "\u2014",
   "metric.shim": "shim",
@@ -9338,6 +9344,8 @@ var en = {
   "status.off": "Off",
   "status.pending": "Pending",
   "status.unmatched": "No match",
+  "status.partial": "Partial",
+  "status.partialDetail": " ({done}/{total} targets)",
   "status.skipped": "Skipped",
   "apply.hint": "Apply writes patches and hangs the current default prompt. A stale plugin default in the box is refreshed from the sealed slot; a separate save is unnecessary. Only a prompt you wrote yourself is kept from the box. Pending = original text still present. Skipped = not needed for this version or the component is not installed.",
   "warn.noRoot": "Could not find this host\u2019s @deepseek-ai tree, so Apply will not patch anything. Fully quit and reopen this host, then Apply here. Desktop may live on any drive; folder names like DeepseekHarnessDesktop or DeepSeek Harness are fine.",
@@ -9862,7 +9870,27 @@ function isAbortError(e) {
 function apiError(message, status) {
   return Object.assign(new Error(message), { status });
 }
-async function apiJson(p, init) {
+var pendingStatus = null;
+function apiJson(p, init) {
+  const method = String(init?.method || "GET").toUpperCase();
+  if (method !== "GET") pendingStatus = null;
+  if (p !== "/dsh-purge/status" || init) return requestJson(p, init);
+  if (pendingStatus) return pendingStatus;
+  const request = requestJson(p, init);
+  pendingStatus = request;
+  const clear = () => {
+    if (pendingStatus === request) pendingStatus = null;
+  };
+  request.then(clear, clear);
+  return request;
+}
+function unavailableStatus(error) {
+  return {
+    ok: false,
+    error: String(error?.message || error || "bad response")
+  };
+}
+async function requestJson(p, init) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), apiTimeoutMs(p, init));
   try {
@@ -9943,6 +9971,7 @@ function statusKind(st) {
   if (st === "applied" || st === "already") return "ok";
   if (st === "pending") return "wait";
   if (st === "unmatched") return "bad";
+  if (st === "partial") return "bad";
   if (st === "na") return "ok";
   if (st === "missing_file" || st === "skipped" || st === "unlocated" || st === "off")
     return "miss";
@@ -9953,6 +9982,7 @@ function statusLabel(st, t) {
   if (st === "off") return t("status.skipped");
   if (st === "pending") return t("status.pending");
   if (st === "unmatched") return t("status.unmatched");
+  if (st === "partial") return t("status.partial");
   if (st === "skipped") return t("status.skipped");
   if (st === "missing_file") return t("skip");
   if (st === "unlocated") return t("status.unlocated");
@@ -9982,12 +10012,20 @@ function patchRowsOf(state) {
   return rows.filter((r) => r.st && r.st !== "na" && Number.isFinite(r.id));
 }
 function tallyPatches(rows) {
-  const out = { applied: 0, pending: 0, unmatched: 0, skipped: 0, total: 0 };
+  const out = {
+    applied: 0,
+    pending: 0,
+    unmatched: 0,
+    partial: 0,
+    skipped: 0,
+    total: 0
+  };
   for (const row of rows || []) {
     out.total += 1;
     if (row.st === "applied" || row.st === "already") out.applied += 1;
     else if (row.st === "pending") out.pending += 1;
     else if (row.st === "unmatched") out.unmatched += 1;
+    else if (row.st === "partial") out.partial += 1;
     else out.skipped += 1;
   }
   return out;
@@ -9995,6 +10033,12 @@ function tallyPatches(rows) {
 function PatchGroups({ state }) {
   const t = useT();
   const [open, setOpen] = useState({});
+  if (state?.ok === false)
+    return h(
+      "p",
+      { role: "status" },
+      "\u8BFB\u53D6\u5931\u8D25\uFF0C\u8865\u4E01\u660E\u7EC6\u6682\u4E0D\u53EF\u7528\uFF1B\u8BF7\u5237\u65B0\u91CD\u8BD5\u3002"
+    );
   if (!state || !state.patch_status)
     return h("div", { className: "dshpp-skel", style: { height: 120 } });
   const located = !!state.ai_base;
@@ -10014,6 +10058,8 @@ function PatchGroups({ state }) {
       notes.push(t("metric.pendingShort", { n: tally.pending }));
     if (tally.unmatched)
       notes.push(t("metric.unmatchedShort", { n: tally.unmatched }));
+    if (tally.partial)
+      notes.push(t("metric.partialShort", { n: tally.partial }));
     if (tally.skipped) notes.push(t("metric.skipShort", { n: tally.skipped }));
     const expanded = !!open[key];
     return h(
@@ -10057,7 +10103,21 @@ function PatchGroups({ state }) {
               { key: r.id },
               h("td", { className: "dshpp-id" }, "#" + r.id),
               h("td", null, t("patch." + r.id)),
-              h("td", null, h(Pill, { value: r.st }))
+              h(
+                "td",
+                null,
+                h(Pill, { value: r.st }),
+                r.st === "partial" ? h(
+                  "span",
+                  { className: "dshpp-sub" },
+                  t("status.partialDetail", {
+                    done: (state.patch_files?.[r.id] || []).filter(
+                      (f) => f.status === "applied"
+                    ).length,
+                    total: (state.patch_files?.[r.id] || []).length
+                  })
+                ) : null
+              )
             )
           )
         )
@@ -11140,40 +11200,27 @@ function PurgifySection({ page = "status", onStatus } = {}) {
     apiJson("/dsh-purge/status").then((d) => {
       if (d && d.ok) {
         setState(d);
+        setNotice(
+          (previous) => previous?.source === "status" ? { kind: "idle", text: "" } : previous
+        );
         if (d.channel) setChannel(d.channel);
         if (d.update && d.update.ok && !d.update.error)
           setUpdateInfo(d.update);
         if (d.boot_full_quit && !suppressRestartAsk.current)
           setAskRestart(true);
       } else {
-        setState({
-          ok: false,
-          patches_total: 0,
-          patches_applied: 0,
-          patch_status: {},
-          shim_cmd: "n/a",
-          shim_ps1: "n/a",
-          shim_bin: "n/a",
-          has_backup: false
-        });
+        setState(unavailableStatus(d?.error || "bad response"));
         setNotice({
           kind: "error",
+          source: "status",
           text: tr("err.status", { error: d && d.error || "bad response" })
         });
       }
     }).catch((e) => {
-      setState({
-        ok: false,
-        patches_total: 0,
-        patches_applied: 0,
-        patch_status: {},
-        shim_cmd: "n/a",
-        shim_ps1: "n/a",
-        shim_bin: "n/a",
-        has_backup: false
-      });
+      setState(unavailableStatus(e));
       setNotice({
         kind: "error",
+        source: "status",
         text: tr("err.status", { error: e.message })
       });
     });
@@ -11618,7 +11665,7 @@ function PurgifySection({ page = "status", onStatus } = {}) {
           h(
             "b",
             null,
-            !located ? sealedReady ? "\u5BBF\u4E3B\u8FD8\u6CA1\u89E3\u5F00\uFF1A\u70B9\u300C\u5E94\u7528\u300D" : "\u672A\u5B9A\u4F4D\u5230\u5BBF\u4E3B\uFF1A\u70B9\u300C\u5E94\u7528\u300D\u91CD\u8BD5" : s?.asar_still_sealed ? `${applied}/${total} \u6761\u78C1\u76D8\u8865\u4E01\uFF08\u9000\u51FA\u91CD\u5F00\u540E\u52A0\u8F7D\uFF09` : tally.pending ? `\u8FD8\u6709 ${tally.pending} \u6761\u5F85\u5E94\u7528` : `${applied}/${total} \u6761\u8865\u4E01\u5DF2\u751F\u6548`
+            !s ? "\u6B63\u5728\u8BFB\u53D6\u5BBF\u4E3B\u72B6\u6001\u2026" : s.ok === false ? "\u72B6\u6001\u8BFB\u53D6\u5931\u8D25\uFF0C\u5BBF\u4E3B\u4E0E\u8865\u4E01\u72B6\u6001\u672A\u77E5" : !located ? sealedReady ? "\u5BBF\u4E3B\u8FD8\u6CA1\u89E3\u5F00\uFF1A\u70B9\u300C\u5E94\u7528\u300D" : "\u672A\u5B9A\u4F4D\u5230\u5BBF\u4E3B\uFF1A\u70B9\u300C\u5E94\u7528\u300D\u91CD\u8BD5" : s?.asar_still_sealed ? `${applied}/${total} \u6761\u78C1\u76D8\u8865\u4E01\uFF08\u9000\u51FA\u91CD\u5F00\u540E\u52A0\u8F7D\uFF09` : tally.pending ? `\u8FD8\u6709 ${tally.pending} \u6761\u5F85\u5E94\u7528` : `${applied}/${total} \u6761\u8865\u4E01\u5DF2\u751F\u6548`
           ),
           h(
             "span",
@@ -11707,7 +11754,7 @@ function PurgifySection({ page = "status", onStatus } = {}) {
           h(
             "b",
             null,
-            s && s.ai_base ? `${applied}/${total} \u5DF2\u5E94\u7528` : "\u672A\u5B9A\u4F4D\u5BBF\u4E3B"
+            !s ? "\u8BFB\u53D6\u4E2D" : s.ok === false ? "\u72B6\u6001\u672A\u77E5" : s.ai_base ? `${applied}/${total} \u5DF2\u5E94\u7528` : "\u672A\u5B9A\u4F4D\u5BBF\u4E3B"
           )
         ),
         h(PatchGroups, { state: s })
@@ -11770,7 +11817,7 @@ function PurgifySection({ page = "status", onStatus } = {}) {
         },
         t("apply.hint")
       ),
-      s && !s.ai_base ? h(
+      s?.ok === true && !s.ai_base ? h(
         "p",
         {
           className: "dshpp-hint",
@@ -12843,12 +12890,7 @@ function SettingsRoot(props = {}) {
     h(
       "header",
       { className: "dshpp-native-head" },
-      h(
-        "div",
-        null,
-        h("h2", null, false ? "dsh-purge Community" : "Purge"),
-        h("p", null, "\u63D2\u4EF6\u8BBE\u7F6E")
-      ),
+      h("div", null, h("h2", null, "Purge"), h("p", null, "\u63D2\u4EF6\u8BBE\u7F6E")),
       h(
         "span",
         { className: "dshpp-native-badge" },
@@ -12980,7 +13022,7 @@ function StatusStrip({ info }) {
       h(
         "b",
         null,
-        level === "qualified" ? "\u5DF2\u56DE\u5F52\u9A8C\u8BC1" : level === "unverified" ? "\u672A\u9A8C\u8BC1\u7248\u672C" : level === "mixed" ? "\u7EC4\u4EF6\u7248\u672C\u4E0D\u4E00\u81F4" : level ? "\u672A\u5B9A\u4F4D\u5BBF\u4E3B" : "\u68C0\u6D4B\u4E2D"
+        level === "qualified" ? "\u5DF2\u56DE\u5F52\u9A8C\u8BC1" : level === "unverified" ? "\u672A\u9A8C\u8BC1\u7248\u672C" : level === "mixed" ? "\u7EC4\u4EF6\u7248\u672C\u4E0D\u4E00\u81F4" : level ? "\u672A\u5B9A\u4F4D\u5BBF\u4E3B" : info?.ok === false ? "\u8BFB\u53D6\u5931\u8D25" : "\u68C0\u6D4B\u4E2D"
       ),
       h(
         HelpTip,
@@ -13039,7 +13081,7 @@ function VersionNotice({ info }) {
     return h(
       "p",
       { className: "dshpp-warn", role: "status" },
-      `\u65E0\u6CD5\u786E\u8BA4\u5B98\u65B9 Purge \u63A5\u53E3\uFF1A${info.error || "\u63A5\u53E3\u4E0D\u53EF\u7528"}\u3002\u8BBE\u7F6E\u53EF\u80FD\u4E0D\u751F\u6548\uFF0C\u8BF7\u68C0\u67E5\u63D2\u4EF6\u662F\u5426\u5DF2\u542F\u7528\u540E\u91CD\u542F DSH\u3002`
+      `\u72B6\u6001\u8BFB\u53D6\u5931\u8D25\uFF1A${info.error || "\u63A5\u53E3\u4E0D\u53EF\u7528"}\u3002\u5F53\u524D\u5BBF\u4E3B\u4E0E\u8865\u4E01\u72B6\u6001\u672A\u77E5\uFF0C\u8BF7\u70B9\u300C\u5237\u65B0\u300D\u91CD\u8BD5\uFF1B\u6301\u7EED\u5931\u8D25\u65F6\u8BF7\u63D0\u4F9B\u64CD\u4F5C\u7CFB\u7EDF\u3001DSH/\u63D2\u4EF6\u7248\u672C\u548C\u6B64\u9519\u8BEF\u3002`
     );
   }
   const backend = info?.plugin_version;
@@ -13059,15 +13101,8 @@ function PurgePage() {
     setTab(id);
     setVisited((v) => Object.assign({}, v, { [id]: true }));
   };
-  const loadInfo = () => apiJson("/dsh-purge/status").then(setInfo).catch(() => {
-  });
-  const mergeInfo = useCallback(
-    (s) => s && setInfo((prev) => Object.assign({}, prev || {}, s)),
-    []
-  );
-  useEffect(() => {
-    loadInfo();
-  }, []);
+  const loadInfo = () => apiJson("/dsh-purge/status").then(setInfo).catch((error) => setInfo(unavailableStatus(error)));
+  const mergeInfo = useCallback((s) => s && setInfo(s), []);
   useEffect(() => {
     if (tab === "status") loadInfo();
   }, [tab]);
@@ -13096,7 +13131,7 @@ function PurgePage() {
       h(
         "div",
         { className: "dshpp-page-title" },
-        h("h1", null, false ? "dsh-purge Community" : "Purge"),
+        h("h1", null, "Purge"),
         h(
           "p",
           null,
@@ -14462,7 +14497,7 @@ function apply(ctx) {
         name: "sidebar.panellist",
         id: "dsh-purge",
         order: 30,
-        label: false ? "dsh-purge Community" : "Purge",
+        label: "Purge",
         inject: () => ({ t })
       },
       PurgeGlyphIcon

@@ -1,3 +1,131 @@
+# 1.6.59
+
+## 把 1.6.58 里那 4 条「部分命中」逐个查清（#85 收尾）
+
+1.6.58 只给 #57 开了逐目标核算，另外 4 条老补丁仍是聚合状态。本版逐条核对 rc.3 的真实
+文件后分别处理，不再让它们悬着：
+
+| 补丁 | 未命中的目标 | 结论 | 处理 |
+|---|---|---|---|
+| #32 | `dsh-harness-dev-context` | 那句是 `legacyParagraph` 的**匹配常量**，用来识别并剥离历史身份段落；改写它反而会让旧段漏进提示词 | `fileOptional`，只核对不改写 |
+| #36 | `dsh-tool-fs` | 相同措辞已由审批补丁写成句首大写 `Approval is auto-granted.`，本补丁原文案在新版不存在 | `fileOptional` |
+| #50 | `dsh-session-reference/lib/types/index.js` | rc.3 原生就是 `untrusted, read-only snapshot` 措辞，已经是我们想要的状态 | 加等价的"已达成"标记 |
+| #62 | `dsh-tools/lib/index.js` | 0.2.1-rc.3 把 deny 判断只留在 `lib/types/index.js`，`lib/index.js` 里整段消失 | `fileOptional` |
+
+新增 `fileOptional: [key]` 语义：列出的目标不参与 `partial` 判定，但**仍然逐文件报告**
+状态，需要在面板里看得到。真机结果：72 applied / 0 pending / 0 partial / 0 unknown。
+
+## 为什么重要
+
+`fileOptional` 不是"忽略失败"的开关：只有确认过「这个目标在新版宿主里已经不承载该行为」
+才能加，并要在注释里写清依据。否则就是拿绿点换安心。
+
+## 验证
+
+`npm test` 359 通过 / 0 失败；新增 fileOptional 用例；真实宿主 4 条补丁均 `applied`，
+`partial` 为 0。
+
+# 1.6.58
+
+## 逐文件补丁状态（#85）
+
+`patchStatus` 以前按补丁聚合：一条补丁声明两个文件，只要一个文件命中就报 `applied`，
+`patchDrift` 也因为 `hitAny` 不报漂移——#57 的 responses 分支就是这样被瞒了几个月。
+
+本版新增：
+
+- `patchStatusDetail()` 返回 `{status, files}`，`files[id]` 是逐目标结果
+  （`{key, path, status}`，状态为 `applied|pending|skipped|unmatched|missing|unreadable`）；
+- 状态接口新增 `patch_files`，面板在「部分命中」时显示 `（1/2 目标）`；
+- 新状态 `partial`：声明了 `fileAllRequired: true` 的多文件补丁，只要还有一个
+  **存在的目标文件**没命中，就不再报 `applied`；`patchDrift` 以 `partial_drift` 上报；
+  自检把该补丁计入 `partial` 并让所在层显示异常；
+- `patchStatusReady("partial")` 为 `false`。
+
+## 为什么是 opt-in，不是一律全开
+
+先按「凡是多文件就逐目标核算」实现后，在本机 rc.3 实测有 4 条老补丁被标成 `partial`：
+
+| 补丁 | 情况 |
+|---|---|
+| #32 / #36 / #50 / #62 | 另一个目标文件在新版宿主里**逻辑已搬走或删除**，锚点自然不存在 |
+
+其中 #62 的 `dsh-tools/lib/index.js` 连 `approval === undefined` 都不再存在（判断只留在
+`types/index.js`），属于"这条补丁对新版只需一个目标"。把这些全标红会把真正的漂移淹掉。
+
+因此本版只让**明确声明每个目标都必须落地**的补丁启用逐目标核算；#57 已声明。
+其余老补丁保持原聚合行为，需要时再逐个核对并加 `fileAllRequired: true`。
+
+## 验证
+
+- 新增 `test/partial-status.test.mjs`：部分命中 → `partial` + `optionalDrift` + 自检 `partial`/层异常；
+  全部命中 → `applied`；全部未命中 → `skipped`；未声明 opt-in 的补丁保持原行为；
+- `npm test` 358 通过 / 0 失败；真实宿主 `partial` 为空，#57 两个目标均 `applied`。
+
+# 1.6.57
+
+## 修复 #57：responses 通路的锚点变量名写错（PR #84）
+
+补丁 #57 `DEEPSEEK_SYSTEM_ROLE` 的 responses 分支一直在找 `const role = ...`，但宿主 `@earendil-works/pi-ai`
+的两个文件里，这个变量从来没有叫过 `role`：
+
+- `openai-completions.js` 用的是 `instructionRole`，**那条 pattern 是对的，而且已经打上**；
+- `openai-responses-shared.js` 用的也是 `instructionRole`，而 pattern 写成了 `role` → **从落地起从未命中**。
+
+后果：走 Responses 通路的请求仍然把注入的系统提示词按 `developer` 角色发出去，第三方网关会静默丢弃
+（实测同内容 system 计 117 tokens、developer 只 87 tokens，差值就是被丢的指令）。状态页一直是绿的，
+因为补丁标了 `optional: true`，且状态按补丁聚合——completions 那半个命中就掩盖了 responses 的失败。
+
+本版把两处 responses 的 `pattern`/`replace` 改成 `instructionRole`：`api.openai.com` / `*.azure.com`
+仍用 `developer`，其余网关全部回退 `system`。
+
+## 验证（补齐了审查要求的两项）
+
+1. **真实宿主验证**：新增测试直接读已安装的 `openai-responses-shared.js`，断言锚点逐字存在、
+   整文件改写后 `node --check` 通过、变量名仍是 `instructionRole`、第二次应用是 no-op；
+   本机实测该文件已打上 `developer role allowlist: openai/azure` 标记并通过语法检查。
+2. **旧补丁迁移**：新增测试用带旧标记 `deepseek.com keeps system role` 的文本验证升级路径，
+   升级后不得残留 `deepseek.com` 字样，且幂等。
+
+`npm test` 353 通过 / 0 失败。
+
+## 范围（未解决的部分）
+
+多文件补丁的**聚合状态**问题仍在：一个文件命中、另一个未命中时，`patchStatus` 仍报 `applied`、
+`patchDrift` 仍返回空。这是 80 条补丁共用的盲区，本版不一起改，另开 issue 跟踪。
+另外，PR 作者「从落地起从未命中」的结论只在本机 rc.3 宿主上验证过，未对全部历史版本下结论。
+
+# 1.6.56
+
+- **状态页性能（PR #82）**：同一次只读诊断共享宿主身份、安装根与路径解析，减少重复磁盘调用。缓存不跨查询保留，避免换包、删除文件或链接改向后仍使用旧证据。
+- **状态错误（#83）**：合并同时发起的相同状态请求；超时、非 JSON 和接口错误保留原因，显示“状态未知”，不再误报 `0/0` 或“未定位宿主”。刷新可重试，真实缺失和补丁漂移继续显示。
+- **主题对比度（PR #81）**：演练台检索按钮与报告步骤编号使用配对主题颜色，同时更新社区版和独立面板构建。
+- 保留现有补丁定义、提示词、预设、设置与权限；不自动应用或重启 DSH。
+
+## 验证与边界
+
+完整回归、原生 Electron 状态接口和 Mac/Windows 隔离安装、迁移、回滚及失败恢复验收记录见 [维护说明](docs/maintenance-issues-81-83.md)。#83 的截图误报已复现；旧版 Windows 状态查询卡顿已复现，但报告者的完整 60 秒超时仍需其系统/DSH 版本和更新后结果确认，issue 保持开放。
+
+感谢 @Legeo969 和 @lyufeng000 的贡献。
+
+---
+
+# 1.6.55
+
+## 侧栏与面板标题改回「Purge」
+
+1.6.51 把界面上显示的名字改成了「dsh-purge Community」，侧栏条目也跟着变了。本版改回 **Purge**：
+
+- 侧栏条目 `label`：`Purge`
+- 面板主标题 `h1`：`Purge`
+- 设置页分组标题 `h2`：`Purge`
+
+包名、命令名、数据目录都不变，仍是 `dsh-purge-community` / `purge-community`，只是显示名回到大字写。
+
+## 验证
+
+`npm test` 320 通过 / 0 失败；两份 bundle 重建后 `check:client` 通过。
+
 # 1.6.54
 
 ## 旧运行时链接迁移与错误详情（#79 / #77）
