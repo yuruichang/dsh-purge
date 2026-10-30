@@ -254,11 +254,12 @@ npm run smoke            # 发行包冒烟
     <td align="center" width="120"><a href="https://github.com/lyufeng000"><img src="https://avatars.githubusercontent.com/u/168790556?s=112" width="56" height="56" alt="lyufeng000" /><br /><sub>lyufeng000</sub></a></td>
     <td align="center" width="120"><a href="https://github.com/Musan-34"><img src="https://avatars.githubusercontent.com/u/279201993?s=112" width="56" height="56" alt="Musan-34" /><br /><sub>Musan-34</sub></a></td>
     <td align="center" width="120"><a href="https://github.com/qianxuno"><img src="https://avatars.githubusercontent.com/u/179305118?s=112" width="56" height="56" alt="qianxuno" /><br /><sub>qianxuno</sub></a></td>
+    <td align="center" width="120"><a href="https://github.com/reova"><img src="https://avatars.githubusercontent.com/u/7455861?s=112" width="56" height="56" alt="reova" /><br /><sub>reova</sub></a></td>
     <td align="center" width="120"><a href="https://github.com/TLcmmmm"><img src="https://avatars.githubusercontent.com/u/167976723?s=112" width="56" height="56" alt="TLcmmmm" /><br /><sub>TLcmmmm</sub></a></td>
     <td align="center" width="120"><a href="https://github.com/Tofu707"><img src="https://avatars.githubusercontent.com/u/178003727?s=112" width="56" height="56" alt="Tofu707" /><br /><sub>Tofu707</sub></a></td>
-    <td align="center" width="120"><a href="https://github.com/yuruichang"><img src="https://avatars.githubusercontent.com/u/7455861?s=112" width="56" height="56" alt="yuruichang" /><br /><sub>yuruichang</sub></a></td>
   </tr>
   <tr>
+    <td align="center" width="120"><a href="https://github.com/yuruichang"><img src="https://avatars.githubusercontent.com/u/7455861?s=112" width="56" height="56" alt="yuruichang" /><br /><sub>yuruichang</sub></a></td>
     <td align="center" width="120"><a href="https://github.com/yuruichang1"><img src="https://avatars.githubusercontent.com/u/49188236?s=112" width="56" height="56" alt="yuruichang1" /><br /><sub>yuruichang1</sub></a></td>
   </tr>
 </table>
