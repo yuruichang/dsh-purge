@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   sync:
-    if: github.repository == 'yuruichang/dsh-purge'
+    if: github.repository == 'reova/dsh-purge'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
