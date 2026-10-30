@@ -138,10 +138,6 @@ Thank you to the original author, code contributors, and everyone who provided r
     <td align="center" width="120"><a href="https://github.com/TLcmmmm"><img src="https://avatars.githubusercontent.com/u/167976723?s=112" width="56" height="56" alt="TLcmmmm" /><br /><sub>TLcmmmm</sub></a></td>
     <td align="center" width="120"><a href="https://github.com/Tofu707"><img src="https://avatars.githubusercontent.com/u/178003727?s=112" width="56" height="56" alt="Tofu707" /><br /><sub>Tofu707</sub></a></td>
   </tr>
-  <tr>
-    <td align="center" width="120"><a href="https://github.com/yuruichang"><img src="https://avatars.githubusercontent.com/u/7455861?s=112" width="56" height="56" alt="yuruichang" /><br /><sub>yuruichang</sub></a></td>
-    <td align="center" width="120"><a href="https://github.com/yuruichang1"><img src="https://avatars.githubusercontent.com/u/49188236?s=112" width="56" height="56" alt="yuruichang1" /><br /><sub>yuruichang1</sub></a></td>
-  </tr>
 </table>
 <!-- CONTRIBUTORS:END -->
 
